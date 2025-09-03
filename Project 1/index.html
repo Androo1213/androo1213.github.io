@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>My CS180 Portfolio</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: url("media/background.jpg") center / cover no-repeat;
+      color: white;
+    }
+    header {
+      padding: 20px;
+    }
+    h1 { margin: 0 0 10px; }
+    .grid {
+      display: flex;
+      gap: 20px;
+      padding: 20px;
+    }
+    .gif-box {
+      flex: 2;
+      background: #eee;
+      padding: 10px;
+      border-radius: 8px;
+    }
+    .gif-box img {
+      width: 100%;
+      display: block;
+      border-radius: 6px;
+    }
+    .strip-box {
+      flex: 1;
+      display: flex;
+      justify-content: space-between;
+      gap: 5px;
+      background: rgba(0,0,0,0.4);
+      padding: 10px;
+      border-radius: 8px;
+    }
+    .strip-box img {
+      width: 18%;
+      aspect-ratio: 1/1;
+      object-fit: cover;
+      border-radius: 4px;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Welcome to My CS180 Portfolio</h1>
+  </header>
+  <main>
+    <div class="grid">
+      <div class="gif-box">
+        <img src="media/demo.gif" alt="GIF Preview">
+      </div>
+      <div class="strip-box">
+        <img src="media/strip1.jpg" alt="strip1">
+        <img src="media/strip2.jpg" alt="strip2">
+        <img src="media/strip3.jpg" alt="strip3">
+        <img src="media/strip4.jpg" alt="strip4">
+        <img src="media/strip5.jpg" alt="strip5">
+      </div>
+    </div>
+  </main>
+</body>
+</html>
