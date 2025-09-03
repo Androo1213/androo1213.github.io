@@ -9,17 +9,27 @@
     body {
       font-family: Arial, sans-serif;
       color: #fff;
-      background: url("media/background.jpg") center/cover no-repeat fixed;
+      display: flex;
+      justify-content: center;
+      padding: 24px;
     }
-    .wrap { max-width: 1100px; margin: 0 auto; padding: 24px; }
+    .section-bg {
+      background: url("media/background.jpg") center/cover no-repeat;
+      border-radius: 12px;
+      padding: 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+    }
     .box {
       background: rgba(0,0,0,.35);
       border: 2px solid #bdbdbd;
       border-radius: 12px;
       padding: 12px;
-      margin-bottom: 18px;
     }
-    .gif-frame { display: grid; place-items: center; }
+    .gif-frame {
+      display: grid; place-items: center;
+    }
     .gif-frame img {
       max-width: 100%;
       height: auto;
@@ -49,7 +59,7 @@
   </style>
 </head>
 <body>
-  <div class="wrap">
+  <div class="section-bg">
     <div class="box">
       <div class="gif-frame">
         <img src="media/demo.gif" alt="Project preview GIF">
