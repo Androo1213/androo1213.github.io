@@ -14,21 +14,15 @@
       padding: 24px;
     }
     .section-bg{
-    background-image: url("https://androo1213.github.io/Project%201/media/backround3.png");
-    background-position: center;
-    background-size: cover;
-    background-repeat: no-repeat;
-    border-radius: 12px;
-    padding: 12px;
-    display: flex;
-    flex-direction: column;
-    gap: 18px;
-  }
-    .box {
-      background: rgba(0,0,0,.35);
-      border: 2px solid #bdbdbd;
+      background-image: url("https://androo1213.github.io/Project%201/media/backround3.png");
+      background-position: center;
+      background-size: cover;
+      background-repeat: no-repeat;
       border-radius: 12px;
       padding: 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
     }
     .gif-frame {
       display: grid; place-items: center;
@@ -41,12 +35,14 @@
     }
     .strip {
       display: grid;
-      grid-template-columns: repeat(5, minmax(120px, 1fr));
-      gap: 10px;
+      grid-template-columns: repeat(5, minmax(80px, 1fr));
+      gap: 8px;
+      max-width: 600px;
+      margin: 0 auto;
     }
     .tile {
       aspect-ratio: 1/1;
-      border-radius: 10px;
+      border-radius: 8px;
       overflow: hidden;
       background: #111;
       display: grid; place-items: center;
@@ -57,25 +53,21 @@
       display: block;
     }
     @media (max-width: 700px) {
-      .strip { grid-template-columns: repeat(5, minmax(80px, 1fr)); }
+      .strip { grid-template-columns: repeat(5, minmax(60px, 1fr)); }
     }
   </style>
 </head>
 <body>
   <div class="section-bg">
-    <div class="box">
-      <div class="gif-frame">
-        <img src="media/demo.gif" alt="Project preview GIF">
-      </div>
+    <div class="gif-frame">
+      <img src="media/demo.gif" alt="Project preview GIF">
     </div>
-    <div class="box">
-      <div class="strip">
-        <div class="tile"><img src="media/strip1.jpg" alt=""></div>
-        <div class="tile"><img src="media/strip2.jpg" alt=""></div>
-        <div class="tile"><img src="media/strip3.jpg" alt=""></div>
-        <div class="tile"><img src="media/strip4.jpg" alt=""></div>
-        <div class="tile"><img src="media/strip5.jpg" alt=""></div>
-      </div>
+    <div class="strip">
+      <div class="tile"><img src="media/strip1.jpg" alt=""></div>
+      <div class="tile"><img src="media/strip2.jpg" alt=""></div>
+      <div class="tile"><img src="media/strip3.jpg" alt=""></div>
+      <div class="tile"><img src="media/strip4.jpg" alt=""></div>
+      <div class="tile"><img src="media/strip5.jpg" alt=""></div>
     </div>
   </div>
 </body>
