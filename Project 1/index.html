@@ -6,88 +6,63 @@
   <title>Project 1</title>
   <style>
     html, body { height: 100%; margin: 0; }
-    body{
+    body {
       font-family: Arial, sans-serif;
       color: #fff;
       background: url("media/background.jpg") center/cover no-repeat fixed;
-      min-height: 100vh;
     }
-    .wrap{ max-width: 1100px; margin: 0 auto; padding: 24px; }
-    .grid{
-      display: grid;
-      grid-template-columns: 2fr 1fr;
-      gap: 20px;
-      align-items: start;
-    }
-    .box{
+    .wrap { max-width: 1100px; margin: 0 auto; padding: 24px; }
+    .box {
       background: rgba(0,0,0,.35);
-      border: 1px solid rgba(255,255,255,.25);
-      border-radius: 10px;
-      padding: 10px;
+      border: 2px solid #bdbdbd;
+      border-radius: 12px;
+      padding: 12px;
+      margin-bottom: 18px;
     }
-
-    .gif-frame{
-      width: 100%;
-      aspect-ratio: 16/9;
-      background:#e5e7eb;
-      border-radius: 8px;
-      overflow: hidden;
-      display: grid;
-      place-items: center;
-    }
-    .gif-frame img{
+    .gif-frame { display: grid; place-items: center; }
+    .gif-frame img {
       max-width: 100%;
-      max-height: 100%;
-      object-fit: contain;   /* ugh maybe this works so it doens't blow up */
+      height: auto;
       display: block;
-    }
-
-    /* strip: five perfect squares */
-    .strip{
-      display: grid;
-      grid-template-columns: repeat(5, 1fr);
-      gap: 8px;
-    }
-    .tile{
-      aspect-ratio: 1/1;      
       border-radius: 8px;
-      overflow: hidden;
-      background:#111;
-      display: grid;
-      place-items: center;
     }
-    .tile img{
-      width: 100%;
-      height: 100%;
-      object-fit: cover;    
+    .strip {
+      display: grid;
+      grid-template-columns: repeat(5, minmax(120px, 1fr));
+      gap: 10px;
+    }
+    .tile {
+      aspect-ratio: 1/1;
+      border-radius: 10px;
+      overflow: hidden;
+      background: #111;
+      display: grid; place-items: center;
+    }
+    .tile img {
+      width: 100%; height: 100%;
+      object-fit: cover;
       display: block;
     }
-
-    @media (max-width: 900px){
-      .grid{ grid-template-columns: 1fr; }
+    @media (max-width: 700px) {
+      .strip { grid-template-columns: repeat(5, minmax(80px, 1fr)); }
     }
   </style>
 </head>
 <body>
   <div class="wrap">
-    <h1 style="margin:0 0 12px">Project 1</h1>
-
-    <div class="grid">
-      <section class="box">
-        <div class="gif-frame">
-          <img src="media/demo.gif" alt="Project preview GIF">
-        </div>
-      </section>
-
-      <aside class="box">
-        <div class="strip">
-          <div class="tile"><img src="media/strip1.jpg" alt=""></div>
-          <div class="tile"><img src="media/strip2.jpg" alt=""></div>
-          <div class="tile"><img src="media/strip3.jpg" alt=""></div>
-          <div class="tile"><img src="media/strip4.jpg" alt=""></div>
-          <div class="tile"><img src="media/strip5.jpg" alt=""></div>
-        </div>
-      </aside>
+    <div class="box">
+      <div class="gif-frame">
+        <img src="media/demo.gif" alt="Project preview GIF">
+      </div>
+    </div>
+    <div class="box">
+      <div class="strip">
+        <div class="tile"><img src="media/strip1.jpg" alt=""></div>
+        <div class="tile"><img src="media/strip2.jpg" alt=""></div>
+        <div class="tile"><img src="media/strip3.jpg" alt=""></div>
+        <div class="tile"><img src="media/strip4.jpg" alt=""></div>
+        <div class="tile"><img src="media/strip5.jpg" alt=""></div>
+      </div>
     </div>
   </div>
 </body>
