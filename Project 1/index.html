@@ -9,7 +9,7 @@
     body {
       font-family: Arial, sans-serif;
       color: #fff;
-      background: url("https://androo1213.github.io/Project%201/media/background.jpg") center/cover no-repeat;
+      background: url("https://androo1213.github.io/Project%201/media/background.jpg") center/cover no-repeat fixed;
       padding: 24px;
     }
     .section-bg {
@@ -17,12 +17,6 @@
       flex-direction: column;
       gap: 18px;
       max-width: 100%;
-    }
-    .box {
-      background: rgba(0,0,0,.35);
-      border: 2px solid #bdbdbd;
-      border-radius: 12px;
-      padding: 12px;
     }
     .top-row {
       display: flex;
@@ -55,6 +49,8 @@
       display: grid;
       grid-template-columns: repeat(5, 1fr);
       gap: 10px;
+      max-width: 800px;
+      margin: 0 auto;
     }
     .tile {
       aspect-ratio: 1/1;
@@ -82,7 +78,7 @@
 </head>
 <body>
   <div class="section-bg">
-    <div class="box top-row">
+    <div class="top-row">
       <div class="gif-frame">
         <img src="media/demo.gif" alt="Project preview GIF">
       </div>
@@ -91,14 +87,12 @@
         <img src="media/part2_2.jpg" alt="Part 2 Image 2">
       </div>
     </div>
-    <div class="box">
-      <div class="strip">
-        <div class="tile"><img src="media/strip1.jpg" alt=""></div>
-        <div class="tile"><img src="media/strip2.jpg" alt=""></div>
-        <div class="tile"><img src="media/strip3.jpg" alt=""></div>
-        <div class="tile"><img src="media/strip4.jpg" alt=""></div>
-        <div class="tile"><img src="media/strip5.jpg" alt=""></div>
-      </div>
+    <div class="strip">
+      <div class="tile"><img src="media/strip1.jpg" alt=""></div>
+      <div class="tile"><img src="media/strip2.jpg" alt=""></div>
+      <div class="tile"><img src="media/strip3.jpg" alt=""></div>
+      <div class="tile"><img src="media/strip4.jpg" alt=""></div>
+      <div class="tile"><img src="media/strip5.jpg" alt=""></div>
     </div>
   </div>
 </body>
