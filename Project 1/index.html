@@ -9,65 +9,96 @@
     body {
       font-family: Arial, sans-serif;
       color: #fff;
-      display: flex;
-      justify-content: center;
+      background: url("https://androo1213.github.io/Project%201/media/background.jpg") center/cover no-repeat;
       padding: 24px;
     }
-    .section-bg{
-      background-image: url("https://androo1213.github.io/Project%201/media/backround3.png");
-      background-position: center;
-      background-size: cover;
-      background-repeat: no-repeat;
-      border-radius: 12px;
-      padding: 12px;
+    .section-bg {
       display: flex;
       flex-direction: column;
       gap: 18px;
+      max-width: 100%;
     }
-    .gif-frame {
-      display: grid; place-items: center;
+    .box {
+      background: rgba(0,0,0,.35);
+      border: 2px solid #bdbdbd;
+      border-radius: 12px;
+      padding: 12px;
+    }
+    .top-row {
+      display: flex;
+      gap: 12px;
+    }
+    .gif-frame,
+    .side-pics {
+      flex: 1;
+      display: grid;
+      place-items: center;
     }
     .gif-frame img {
       max-width: 100%;
       height: auto;
-      display: block;
       border-radius: 8px;
+      display: block;
+    }
+    .side-pics {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+    .side-pics img {
+      width: 100%;
+      height: auto;
+      border-radius: 8px;
+      display: block;
     }
     .strip {
       display: grid;
-      grid-template-columns: repeat(5, minmax(80px, 1fr));
-      gap: 8px;
-      max-width: 600px;
-      margin: 0 auto;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 10px;
     }
     .tile {
       aspect-ratio: 1/1;
-      border-radius: 8px;
+      border-radius: 10px;
       overflow: hidden;
       background: #111;
-      display: grid; place-items: center;
+      display: grid;
+      place-items: center;
     }
     .tile img {
-      width: 100%; height: 100%;
+      width: 100%;
+      height: 100%;
       object-fit: cover;
       display: block;
     }
-    @media (max-width: 700px) {
-      .strip { grid-template-columns: repeat(5, minmax(60px, 1fr)); }
+    @media (max-width: 900px) {
+      .top-row {
+        flex-direction: column;
+      }
+      .side-pics {
+        grid-template-columns: 1fr;
+      }
     }
   </style>
 </head>
 <body>
   <div class="section-bg">
-    <div class="gif-frame">
-      <img src="media/demo.gif" alt="Project preview GIF">
+    <div class="box top-row">
+      <div class="gif-frame">
+        <img src="media/demo.gif" alt="Project preview GIF">
+      </div>
+      <div class="side-pics">
+        <img src="media/part2_1.jpg" alt="Part 2 Image 1">
+        <img src="media/part2_2.jpg" alt="Part 2 Image 2">
+      </div>
     </div>
-    <div class="strip">
-      <div class="tile"><img src="media/strip1.jpg" alt=""></div>
-      <div class="tile"><img src="media/strip2.jpg" alt=""></div>
-      <div class="tile"><img src="media/strip3.jpg" alt=""></div>
-      <div class="tile"><img src="media/strip4.jpg" alt=""></div>
-      <div class="tile"><img src="media/strip5.jpg" alt=""></div>
+    <div class="box">
+      <div class="strip">
+        <div class="tile"><img src="media/strip1.jpg" alt=""></div>
+        <div class="tile"><img src="media/strip2.jpg" alt=""></div>
+        <div class="tile"><img src="media/strip3.jpg" alt=""></div>
+        <div class="tile"><img src="media/strip4.jpg" alt=""></div>
+        <div class="tile"><img src="media/strip5.jpg" alt=""></div>
+      </div>
     </div>
   </div>
 </body>
