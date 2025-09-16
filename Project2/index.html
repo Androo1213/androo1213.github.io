@@ -1,6 +1,13 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+  <style>
+  @media (min-width: 1280px) {
+    .page { max-width: 1800px; }  
+  }
+  </style>
+  <script async id="MathJax-script"
+        src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
   <meta charset="utf-8" />
   <title>Project 2 — Prokudin-Gorskii Background</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -99,6 +106,78 @@
     </div>
 
     <p class="nav"><a href="../index.html">← Back to portfolio home</a></p>
+    <section style="margin-top: 36px;">
+  <!---SINGLE ~~~~~~~~~~~~ --->    
+  <h2 style="margin: 0 0 10px;">Single-Scale Alignment</h2>
+
+  <div style="display:grid; grid-template-columns: 1.15fr .85fr; gap:28px; align-items:start;">
+    <div style="background:#fff; border:1px solid #eee; border-radius:12px; padding:16px;">
+      <p>
+        First, naive windowed search on lower resolution JPEGs was explored. This algorithm exhaustivley searches over shifts
+        \((\Delta x,\Delta y)\in[-r,r]^2\) scales with both window size and image area:
+      </p>
+      <p style="text-align:center; margin:10px 0;">
+        \[
+          T_{\text{single}} \;\approx\; (2r+1)^2 \cdot N
+        \]
+      </p>
+      <p>
+        where \(N\) is the # of overlapping pixels approx(width × height). Doubling the image resolution or widening the
+        window of course leads to much higher runtimes.
+      </p>
+
+      <h3 style="margin:14px 0 6px; font-size:1.05rem;">Scoring</h3>
+      <p style="margin:6px 0;">
+        <strong>NCC (Normalized Cross-Correlation)</strong> seek to maximise:
+      </p>
+      <p style="text-align:center; margin:8px 0;">
+        \[
+          \mathrm{NCC}(A,B) \;=\;
+          \frac{\sum (A-\bar A)(B-\bar B)}
+               {\sqrt{\sum (A-\bar A)^2}\;\sqrt{\sum (B-\bar B)^2}}
+        \]
+      </p>
+      <p style="margin:6px 0;">
+        <strong>L2 (sum of squared differences)</strong> minimise:
+      </p>
+      <p style="text-align:center; margin:8px 0;">
+        \[
+          \mathrm{L2}(A,B) \;=\; \sum (A - B)^2
+        \]
+      </p>
+      <p>
+        Behind the scenes, a small interior border gets cropped so that the gram artifacts are ingored (as sometimes
+        only a single slide captured light from some bordering region). Then the score for each shift is evaluated and the best
+        is taken  \((\Delta x,\Delta y)\) for \(G\!\to\!B\) and \(R\!\to\!B\), then stack to RGB.
+      </p>
+    </div>
+
+    <!-- pictures -->
+    <div style="background:#fff; border:1px solid #eee; border-radius:12px; padding:14px;">
+      <div style="display:grid; grid-template-columns:repeat(4,1fr); gap:12px;">
+        <figure style="margin:0; background:#f8f8f8; border:1px solid #e6e6e6; border-radius:10px; padding:6px;">
+          <img src="media/cathedral_single.jpg" alt="Cathedral — single-scale" style="width:100%; height:auto; display:block; border-radius:8px;">
+          <figcaption style="font-size:.85rem; color:#666; text-align:center; margin-top:4px;">Cathedral — single</figcaption>
+        </figure>
+        <figure style="margin:0; background:#f8f8f8; border:1px solid #e6e6e6; border-radius:10px; padding:6px;">
+          <img src="media/church_noalign.jpg" alt="Church — no alignment" style="width:100%; height:auto; display:block; border-radius:8px;">
+          <figcaption style="font-size:.85rem; color:#666; text-align:center; margin-top:4px;">Church — no-align</figcaption>
+        </figure>
+        <figure style="margin:0; background:#f8f8f8; border:1px solid #e6e6e6; border-radius:10px; padding:6px;">
+          <img src="media/monastery_single.jpg" alt="Monastery — single-scale" style="width:100%; height:auto; display:block; border-radius:8px;">
+          <figcaption style="font-size:.85rem; color:#666; text-align:center; margin-top:4px;">Monastery — single</figcaption>
+        </figure>
+        <figure style="margin:0; background:#f8f8f8; border:1px solid #e6e6e6; border-radius:10px; padding:6px;">
+          <img src="media/tobolsk_single.jpg" alt="Tobolsk — single-scale" style="width:100%; height:auto; display:block; border-radius:8px;">
+          <figcaption style="font-size:.85rem; color:#666; text-align:center; margin-top:4px;">Tobolsk — single</figcaption>
+        </figure>
+      </div>
+      <p style="color:#666; font-size:.9rem; margin:10px 2px 0;">
+        After single-scale NCC on the 3 colour channels to align them.
+      </p>
+    </div>
+  </div>
+</section>
   </div>
 </body>
 </html>
