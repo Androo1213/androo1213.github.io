@@ -1,1 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>Project 2 — Prokudin-Gorskii Background</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <style>
+    :root {
+      --fg: #1b1b1b;
+      --muted: #666;
+      --card: #f7f7f7;
+    }
+    html, body { margin: 0; padding: 0; }
+    body { font-family: Arial, Helvetica, sans-serif; color: var(--fg); line-height: 1.55; }
+    .page { max-width: 1100px; margin: 32px auto; padding: 0 20px; }
+    h1 { margin: 0 0 8px; }
+    .subtle { color: var(--muted); margin: 0 0 24px; }
 
+    .hero {
+      display: flex;
+      align-items: center;
+      gap: 24px;
+      margin: 18px 0 10px;
+    }
+    .imgcard {
+      background: var(--card);
+      border: 1px solid #e5e5e5;
+      border-radius: 12px;
+      padding: 8px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+      max-width: 46%;
+      flex: 1 1 0;
+    }
+    .imgcard img {
+      width: 100%;
+      height: auto;
+      display: block;
+      border-radius: 8px;
+    }
+    .caption {
+      font-size: 0.9rem;
+      color: var(--muted);
+      margin-top: 6px;
+      text-align: center;
+    }
+    .arrow {
+      font-size: 48px;
+      line-height: 1;
+      user-select: none;
+    }
+
+    .blurb {
+      margin-top: 8px;
+      background: #fafafa;
+      border: 1px solid #eee;
+      border-radius: 10px;
+      padding: 14px 16px;
+      font-size: 0.98rem;
+    }
+
+    .nav { margin-top: 28px; }
+    .nav a { color: #0b66d6; text-decoration: none; }
+    .nav a:hover { text-decoration: underline; }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <h1>P Background</h1>
+    <p class="subtle">
+      In 1909 Sergei M. Prokudin-Gorskii photographed scenes across Russia, but shooting the same green, red,
+      and blue filters on a silge glass plate, hoping that in teh future, someone would be able to 
+      recombine the three exposures into fully coloured images. This project goes through implementing this very vision!
+    </p>
+    <p class="subtle">
+      We take the plates that Prokudin-Gorskii shot into, split the plate into blue, green and red channels, and then
+      explore different processing techniques to create colour photographs. 
+    </p>
+
+    <!-- colour plates to emir -->
+    <div class="hero">
+      <figure class="imgcard">
+        <img
+          src=".media/EmirSlides.png"
+          alt="Three vertically stacked Emir exposures (B,G,R) on a single plate" />
+        <figcaption class="caption">Original plate (B/G/R exposures)</figcaption>
+      </figure>
+      <div class="arrow" aria-hidden="true">➜</div>
+      <figure class="imgcard">
+        <img src=".media/emir_edges.jpg" alt="Aligned and colorized Emir result" />
+        <figcaption class="caption">Aligned &amp; colorized Emir</figcaption>
+      </figure>
+    </div>
+
+    <div class="blurb">
+      <strong>3 Different Methods of Alignment:</strong> The first method is to start with a naive single-scale alignment
+      on low resolution imagee(windowed NCC/L2), then add a multi-scale image pyramid algorith to make
+      large TIFFs tractable, and finally use an edge based variantto align
+      across channels.
+    </div>
+
+    <p class="nav"><a href="../index.html">← Back to portfolio home</a></p>
+  </div>
+</body>
+</html>
