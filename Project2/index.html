@@ -106,12 +106,13 @@
     </div>
 
     <p class="nav"><a href="../index.html">← Back to portfolio home</a></p>
-    <section style="margin-top: 36px;">
+  <section style="margin-top: 36px;">
   <!---SINGLE ~~~~~~~~~~~~ ---> 
   <!---Insert --->  
   <h2 style="margin: 0 0 10px;">Single-Scale Alignment</h2>
 
-  <div style="display:grid; grid-template-columns: 1.15fr .85fr; gap:28px; align-items:start;">
+  <!-- changed to single column so images go UNDER the text -->
+  <div style="display:grid; grid-template-columns: 1fr; gap:28px; align-items:start;">
     <div style="background:#fff; border:1px solid #eee; border-radius:12px; padding:16px;">
       <p>
         First, naive windowed search on lower resolution JPEGs was explored. This algorithm exhaustivley searches over shifts
@@ -153,7 +154,7 @@
       </p>
     </div>
 
-    <!-- pictures -->
+    <!-- pictures (now below the text) -->
     <div style="background:#fff; border:1px solid #eee; border-radius:12px; padding:14px;">
       <div style="display:grid; grid-template-columns:repeat(4,1fr); gap:12px;">
         <figure style="margin:0; background:#f8f8f8; border:1px solid #e6e6e6; border-radius:10px; padding:6px;">
@@ -177,6 +178,171 @@
         After single-scale NCC on the 3 colour channels to align them.
       </p>
     </div>
+  </div>
+</section>
+    <!-- Pyramid -->
+    
+<section id="pyramid" style="margin-top: 56px;">
+  <h2 style="margin: 0 0 12px;">Multi scale Pyramid Alignment</h2>
+
+  <!-- explanation + diagram -->
+  <div style="display:grid; grid-template-columns: 1.15fr .85fr; gap:24px; align-items:start;">
+    <div style="background:#fff; border:1px solid #eee; border-radius:12px; padding:16px;">
+      <p>
+        Exhaustive window search becomes intractably when the possible displacement \((\Delta x,\Delta y)\) gets big
+        Thus, a Gaussian image pyrmaid fixes this by aligning at a coarse scale, then
+        successively refining at finer scales using a tiny local search. This algorithmics workings are explored further.
+      </p>
+
+      <p style="text-align:center; margin:12px 0;">
+        \[
+          T_{\text{single}} \;\approx\; (2r+1)^2\,N
+        \]
+      </p>
+      <p class="subtle" style="margin-top:-6px;">
+        where \(r\) is the half window and \(N\) is the # of overlapping pixels.
+        Runtime grows quadratically with \(r\) and linearly with image area. A huge improvemnt from before!
+      </p>
+
+      <p>
+        For a pyramid with downsample factor 2 and levels \(\ell=0\) (coarsest) … \(L-1\) (finest),
+        each level has \(N_\ell \approx N/4^{\,\ell}\). A broader search only at the top level is done
+        (radius \(r_c\)), then a small local search (radius \(r_f\)) at the finer levels:
+      </p>
+
+      <p style="text-align:center; margin:12px 0;">
+        \[
+          T_{\text{pyr}} \;\approx\; \sum_{\ell=0}^{L-1} (2r_\ell+1)^2\,N_\ell,
+          \qquad N_\ell \approx \frac{N}{4^{\,\ell}}
+        \]
+      </p>
+
+      <p class="subtle" style="margin-top:-6px;">
+        If \(r_f\) is a small and only the top level uses a larger \(r_c\), then
+        \[
+          T_{\text{pyr}} \;\lesssim\; \underbrace{(2r_c{+}1)^2\,\frac{N}{4^{\,L-1}}}_{\text{tiny}} 
+          \;+\; (2r_f{+}1)^2 \sum_{\ell=0}^{L-2}\frac{N}{4^{\,\ell}}
+          \;\le\; \frac{4}{3}\, (2r_f{+}1)^2\, N \;=\; \mathcal{O}(N).
+        \]
+        So instead of one huge search we do a few tiny ones leading to asymptotically linear work.
+      </p>
+
+      <p style="margin-top:10px;">
+        The running translation estimate \((d_y,d_x)\) is propagated upward:
+        \[
+          (d_y,d_x)_{\ell-1} \;=\; 2\,(d_y,d_x)_\ell \;+\; \delta_\ell,
+        \]
+        where \(\delta_\ell\) is the best lcal shift found at level \(\ell\).
+      </p>
+    </div>
+
+    <figure style="margin:0; background:#fafafa; border:1px solid #eee; border-radius:12px; padding:12px;">
+
+      <img src="media/pyrimaid.png" alt="Just to visualise" style="width:100%; height:auto; display:block; border-radius:8px;">
+      <figcaption class="caption" style="margin-top:6px;">Gaussian pyramid: filter then subsample, coarse → fine alignment.</figcaption>
+    </figure>
+  </div>
+  <!-- rrezzy-->
+  <div style="margin-top:18px; background:#fff; border:1px solid #eee; border-radius:12px; padding:14px;">
+    <div
+      style="
+        display:grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap:14px;
+      ">
+      <!-- One card per pyramid output. Images are expected in Project2/pyramid/*.jpg -->
+      <figure style="margin:0; background:#f8f8f8; border:1px solid #e6e6e6; border-radius:10px; padding:6px;">
+        <img src="media/cathedral_pyramid.jpg" alt="cathedral pyramid" style="width:100%; border-radius:8px;">
+        <figcaption class="caption">Cathedral — G→B (2,5), R→B (3,12)</figcaption>
+      </figure>
+
+      <figure style="margin:0; background:#f8f8f8; border:1px solid #e6e6e6; border-radius:10px; padding:6px;">
+        <img src="media/church_pyramid.jpg" alt="church pyramid" style="width:100%; border-radius:8px;">
+        <figcaption class="caption">Church — G→B (4,25), R→B (-4,58)</figcaption>
+      </figure>
+
+      <figure style="margin:0; background:#f8f8f8; border:1px solid #e6e6e6; border-radius:10px; padding:6px;">
+        <img src="media/emir_pyramid.jpg" alt="emir pyramid" style="width:100%; border-radius:8px;">
+        <figcaption class="caption">Emir — G→B (24,48), R→B (14,-54)</figcaption>
+      </figure>
+
+      <figure style="margin:0; background:#f8f8f8; border:1px solid #e6e6e6; border-radius:10px; padding:6px;">
+        <img src="media/harvesters_pyramid.jpg" alt="harvesters pyramid" style="width:100%; border-radius:8px;">
+        <figcaption class="caption">Harvesters — G→B (17,59), R→B (14,123)</figcaption>
+      </figure>
+
+      <figure style="margin:0; background:#f8f8f8; border:1px solid #e6e6e6; border-radius:10px; padding:6px;">
+        <img src="media/icon_pyramid.jpg" alt="icon pyramid" style="width:100%; border-radius:8px;">
+        <figcaption class="caption">Icon — G→B (17,41), R→B (23,90)</figcaption>
+      </figure>
+
+      <figure style="margin:0; background:#f8f8f8; border:1px solid #e6e6e6; border-radius:10px; padding:6px;">
+        <img src="media/italil_pyramid.jpg" alt="italil pyramid" style="width:100%; border-radius:8px;">
+        <figcaption class="caption">Italil — G→B (21,38), R→B (36,77)</figcaption>
+      </figure>
+
+      <figure style="margin:0; background:#f8f8f8; border:1px solid #e6e6e6; border-radius:10px; padding:6px;">
+        <img src="media/lastochikino_pyramid.jpg" alt="lastochikino pyramid" style="width:100%; border-radius:8px;">
+        <figcaption class="caption">Lastochikino — G→B (-2,-3), R→B (-8,75)</figcaption>
+      </figure>
+
+      <figure style="margin:0; background:#f8f8f8; border:1px solid #e6e6e6; border-radius:10px; padding:6px;">
+        <img src="media/lugano_pyramid.jpg" alt="lugano pyramid" style="width:100%; border-radius:8px;">
+        <figcaption class="caption">Lugano — G→B (-16,41), R→B (-29,93)</figcaption>
+      </figure>
+
+      <figure style="margin:0; background:#f8f8f8; border:1px solid #e6e6e6; border-radius:10px; padding:6px;">
+        <img src="media/master-pnp-prok-00000-00016a_pyramid.jpg" alt="00016a pyramid" style="width:100%; border-radius:8px;">
+        <figcaption class="caption">00016a — G→B (14,43), R→B (17,96)</figcaption>
+      </figure>
+
+      <figure style="margin:0; background:#f8f8f8; border:1px solid #e6e6e6; border-radius:10px; padding:6px;">
+        <img src="media/master-pnp-prok-00000-00087a_pyramid.jpg" alt="00087a pyramid" style="width:100%; border-radius:8px;">
+        <figcaption class="caption">00087a — G→B (40,48), R→B (57,109)</figcaption>
+      </figure>
+
+      <figure style="margin:0; background:#f8f8f8; border:1px solid #e6e6e6; border-radius:10px; padding:6px;">
+        <img src="media/master-pnp-prok-00400-00459a_pyramid.jpg" alt="00459a pyramid" style="width:100%; border-radius:8px;">
+        <figcaption class="caption">00459a — G→B (16,55), R→B (10,117)</figcaption>
+      </figure>
+
+      <figure style="margin:0; background:#f8f8f8; border:1px solid #e6e6e6; border-radius:10px; padding:6px;">
+        <img src="media/melons_pyramid.jpg" alt="melons pyramid" style="width:100%; border-radius:8px;">
+        <figcaption class="caption">Melons — G→B (10,82), R→B (13,180)</figcaption>
+      </figure>
+
+      <figure style="margin:0; background:#f8f8f8; border:1px solid #e6e6e6; border-radius:10px; padding:6px;">
+        <img src="media/monastery_pyramid.jpg" alt="monastery pyramid" style="width:100%; border-radius:8px;">
+        <figcaption class="caption">Monastery — G→B (2,-3), R→B (2,3)</figcaption>
+      </figure>
+
+      <figure style="margin:0; background:#f8f8f8; border:1px solid #e6e6e6; border-radius:10px; padding:6px;">
+        <img src="media/self_portrait_pyramid.jpg" alt="self portrait pyramid" style="width:100%; border-radius:8px;">
+        <figcaption class="caption">Self Portrait — G→B (29,78), R→B (37,175)</figcaption>
+      </figure>
+
+      <figure style="margin:0; background:#f8f8f8; border:1px solid #e6e6e6; border-radius:10px; padding:6px;">
+        <img src="media/siren_pyramid.jpg" alt="siren pyramid" style="width:100%; border-radius:8px;">
+        <figcaption class="caption">Siren — G→B (-5,49), R→B (-24,97)</figcaption>
+      </figure>
+
+      <figure style="margin:0; background:#f8f8f8; border:1px solid #e6e6e6; border-radius:10px; padding:6px;">
+        <img src="media/three_generations_pyramid.jpg" alt="three generations pyramid" style="width:100%; border-radius:8px;">
+        <figcaption class="caption">Three Generations — G→B (14,52), R→B (12,111)</figcaption>
+      </figure>
+
+      <figure style="margin:0; background:#f8f8f8; border:1px solid #e6e6e6; border-radius:10px; padding:6px;">
+        <img src="media/tobolsk_pyramid.jpg" alt="tobolsk pyramid" style="width:100%; border-radius:8px;">
+        <figcaption class="caption">Tobolsk — G→B (3,3), R→B (3,7)</figcaption>
+      </figure>
+    </div>
+
+    <p style="color:#666; font-size:.9rem; margin:12px 2px 0;">
+      <em>Note on Emir.</em> The Emir photo is... bad. This can be attrbiuted to the idea of similarity can be misleading for Emir because his robe is saturated in
+      blue/green and comparatively dark in red, so NCC on pixel intensities can prefer background structures
+      over the correct alignment thus leading to one channel being improperly aligned. Choosing a different base channel can prevent this, however, we'll see a different method
+      which aligns over edge-based features instead, which are inhreitly illumination invariant and thus fix this misaligned Emir photo.
+    </p>
   </div>
 </section>
   </div>
