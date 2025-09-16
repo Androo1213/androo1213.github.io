@@ -345,6 +345,111 @@
     </p>
   </div>
 </section>
+    <!--last but -->
+<section style="margin-top: 48px;">
+  <h2 style="margin: 0 0 12px;">Edge Based Alignment</h2>
+
+  <div style="display:grid; grid-template-columns: 1.15fr .85fr; gap:28px; align-items:start;">
+    <!-- Left: short write-up with math -->
+    <div style="background:#fff; border:1px solid #eee; border-radius:12px; padding:16px;">
+      <p>
+        Raw pixel intensities can disagree across channels, like was seem with Emir's cyan robe vs the R channel. Edges have a shared strucutre largely,
+        and thus we can try aligned on the gradient magnitude of a smoothy image, as smoothing helps properly alignment, pronnoncing edges.
+      </p>
+
+      <p style="margin:10px 0 4px;"><strong>Smooth → Differentiate (like how was seen in lecture):</strong></p>
+      <p style="text-align:center; margin:8px 0;">
+        \[
+          f_\sigma \;=\; f * g_\sigma,\quad
+          f_x \approx k_x * f_\sigma,\quad
+          f_y \approx k_y * f_\sigma,\quad
+          \|\nabla f_\sigma\| \;=\; \sqrt{f_x^2 + f_y^2}.
+        \]
+      </p>
+
+      <p style="margin:10px 0 4px;"><strong>Additioanlly, for efficiency we leverage the fact that:</strong> convolution is associative/commutative, so</p>
+      <p style="text-align:center; margin:8px 0;">
+        \[
+          \nabla(f * g_\sigma) \;=\; (\nabla f) * g_\sigma \;=\; f * (\nabla g_\sigma).
+        \]
+      </p>
+      <p>
+        Saving one operation per photo since we only have to apply the 'mega-convolved' filter. Then this process scores patches using NCC on
+        \(\|\nabla f_\sigma\|\), which is more invariant to odd colour saturations than raw pixels. 
+      </p>
+
+      <p style="margin:10px 0 4px;"><strong>Emir improves:</strong> his robe’s color swaps cause pixels seem to cause mismatch across channels,
+        but all the seams, edges, contours and folds aligned in this way stay constant with eachother.Aligning on \(\|\nabla f_\sigma\|\) removes the color-bias and 
+        it seems produces the sharpest result.
+      </p>
+    </div>
+
+    <!-- intermediates -->
+    <div style="background:#fff; border:1px solid #eee; border-radius:12px; padding:14px;">
+      <p style="margin:0 0 8px; font-weight:600;">Emir (B channel) — intermediates</p>
+      <div style="display:grid; grid-template-columns:repeat(3,1fr); gap:10px;">
+        <figure style="margin:0; background:#f8f8f8; border:1px solid #e6e6e6; border-radius:10px; padding:6px;">
+          <img src="media/emir_b_blur.jpg" alt="Gaussian blur" style="width:100%; border-radius:8px;">
+          <figcaption style="font-size:.8rem; color:#666; text-align:center; margin-top:4px;">Blur \(f * g_\sigma\)</figcaption>
+        </figure>
+        <figure style="margin:0; background:#f8f8f8; border:1px solid #e6e6e6; border-radius:10px; padding:6px;">
+          <img src="media/emir_b_gradx.jpg" alt="Gradient x" style="width:100%; border-radius:8px;">
+          <figcaption style="font-size:.8rem; color:#666; text-align:center; margin-top:4px;">\(f_x\)</figcaption>
+        </figure>
+        <figure style="margin:0; background:#f8f8f8; border:1px solid #e6e6e6; border-radius:10px; padding:6px;">
+          <img src="media/emir_b_grady.jpg" alt="Gradient y" style="width:100%; border-radius:8px;">
+          <figcaption style="font-size:.8rem; color:#666; text-align:center; margin-top:4px;">\(f_y\)</figcaption>
+        </figure>
+        <figure style="margin:0; background:#f8f8f8; border:1px solid #e6e6e6; border-radius:10px; padding:6px;">
+          <img src="media/emir_b_gradmag.jpg" alt="Gradient magnitude" style="width:100%; border-radius:8px;">
+          <figcaption style="font-size:.8rem; color:#666; text-align:center; margin-top:4px;">\(\|\nabla f_\sigma\|\)</figcaption>
+        </figure>
+        <figure style="margin:0; background:#f8f8f8; border:1px solid #e6e6e6; border-radius:10px; padding:6px;">
+          <img src="media/emir_b_orient.jpg" alt="Orientation HSV" style="width:100%; border-radius:8px;">
+          <figcaption style="font-size:.8rem; color:#666; text-align:center; margin-top:4px;">Orientation (H) + mag (V)</figcaption>
+        </figure>
+        <figure style="margin:0; background:#f8f8f8; border:1px solid #e6e6e6; border-radius:10px; padding:6px;">
+          <img src="media/emir_edges.jpg" alt="Aligned Emir via edges" style="width:100%; border-radius:8px;">
+          <figcaption style="font-size:.8rem; color:#666; text-align:center; margin-top:4px;">Final (edge-aligned)</figcaption>
+        </figure>
+      </div>
+      <p style="color:#666; font-size:.9rem; margin:10px 2px 0;">
+        Pipeline: blur → finite differences \((k_x,k_y)\) → magnitude → NCC on \(\|\nabla f_\sigma\|\).
+      </p>
+    </div>
+  </div>
+
+  <!-- edge aligned ones gallery -->
+  <div style="margin-top:22px; background:#fff; border:1px solid #eee; border-radius:12px; padding:14px;">
+    <p style="margin:0 0 10px; font-weight:600;">More edge-aligned results</p>
+    <div style="display:grid; grid-template-columns:repeat(5,1fr); gap:12px;">
+      <figure style="margin:0; background:#f8f8f8; border:1px solid #e6e6e6; border-radius:10px; padding:6px;">
+        <img src="media/church_edges.jpg" alt="Church — edges" style="width:100%; border-radius:8px;">
+        <figcaption style="font-size:.8rem; color:#666; text-align:center; margin-top:4px;">Church — edges</figcaption>
+      </figure>
+      <figure style="margin:0; background:#f8f8f8; border:1px solid #e6e6e6; border-radius:10px; padding:6px;">
+        <img src="media/melons_edges.jpg" alt="Melons — edges" style="width:100%; border-radius:8px;">
+        <figcaption style="font-size:.8rem; color:#666; text-align:center; margin-top:4px;">Melons — edges</figcaption>
+      </figure>
+      <figure style="margin:0; background:#f8f8f8; border:1px solid #e6e6e6; border-radius:10px; padding:6px;">
+        <img src="media/three_generations_edges.jpg" alt="Three Generations — edges" style="width:100%; border-radius:8px;">
+        <figcaption style="font-size:.8rem; color:#666; text-align:center; margin-top:4px;">Three Generations — edges</figcaption>
+      </figure>
+      <figure style="margin:0; background:#f8f8f8; border:1px solid #e6e6e6; border-radius:10px; padding:6px;">
+        <img src="media/lastochikino_edges.jpg" alt="Lastochikino — edges" style="width:100%; border-radius:8px;">
+        <figcaption style="font-size:.8rem; color:#666; text-align:center; margin-top:4px;">Lastochikino — edges</figcaption>
+      </figure>
+      <figure style="margin:0; background:#f8f8f8; border:1px solid #e6e6e6; border-radius:10px; padding:6px;">
+        <img src="media/emir_edges.jpg" alt="Emir — edges" style="width:100%; border-radius:8px;">
+        <figcaption style="font-size:.8rem; color:#666; text-align:center; margin-top:4px;">Emir — edges (final)</figcaption>
+      </figure>
+    </div>
+    <p style="color:#666; font-size:.9rem; margin:10px 2px 0;">
+      Note: Emir din't work well  with pixel based scoring since the robe in Green/blue doesn’t match red in brightness.
+      Edge features are constant across all channels and alignment locks into shared structure.
+    </p>
+  </div>
+</section>
   </div>
 </body>
 </html>
