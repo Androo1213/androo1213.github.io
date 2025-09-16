@@ -367,7 +367,7 @@
         \]
       </p>
 
-      <p style="margin:10px 0 4px;"><strong>Additioanlly, for efficiency we leverage the fact that:</strong> convolution is associative/commutative, so</p>
+      <p style="margin:10px 0 4px;"><strong>Additionally, for efficiency we leverage the fact that:</strong> convolution is associative/commutative, so</p>
       <p style="text-align:center; margin:8px 0;">
         \[
           \nabla(f * g_\sigma) \;=\; (\nabla f) * g_\sigma \;=\; f * (\nabla g_\sigma).
@@ -378,9 +378,9 @@
         \(\|\nabla f_\sigma\|\), which is more invariant to odd colour saturations than raw pixels. 
       </p>
 
-      <p style="margin:10px 0 4px;"><strong>Emir improves:</strong> his robe’s color swaps cause pixels seem to cause mismatch across channels,
-        but all the seams, edges, contours and folds aligned in this way stay constant with eachother.Aligning on \(\|\nabla f_\sigma\|\) removes the color-bias and 
-        it seems produces the sharpest result.
+      <p style="margin:10px 0 4px;"><strong>Emir improves:</strong> before, his robe’s color becomes misaligned becuase pixels seem to cause mismatch across channels. However,
+         all the seams, edges, contours, and folds on his Robe are aligned! In this way stay when we align with our edge gradient method, we align invariantly in respect to colour and instead math
+         on \(\|\nabla f_\sigma\|\). It seems that this produces the sharpest result!
       </p>
     </div>
 
