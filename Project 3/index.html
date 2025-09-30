@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <style>
+  /*responsive design */
+  @media (min-width: 1280px) {
+    .page { max-width: 1400px; } 
+  }
+  </style>
+  <script async id="MathJax-script"
+        src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+  <meta charset="utf-8" />
+  <title>Project 2</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <style>
+    :root {
+      --fg: #1b1b1b;
+      --muted: #666;
+      --card: #f7f7f7;
+    }
+    html, body { margin: 0; padding: 0; }
+    body { font-family: Arial, Helvetica, sans-serif; color: var(--fg); line-height: 1.55; }
+    .page { max-width: 1100px; margin: 32px auto; padding: 0 20px; }
+    h1 { margin: 0 0 8px; }
+    h2 { margin-top: 48px; border-bottom: 1px solid #eee; padding-bottom: 8px;}
+    .subtle { color: var(--muted); margin: 0 0 24px; }
+
+    /*captions utilities */
+    .hero {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin: 18px 0 10px;
+      flex-wrap: wrap; /*apparently this fixes it on my phone */
+    }
+    .imgcard {
+      background: var(--card);
+      border: 1px solid #e5e5e5;
+      border-radius: 12px;
+      padding: 8px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+      flex: 1 1 auto;
+      max-width: 100%;
+    }
+    .imgcard img {
+      width: 100%;
+      height: auto;
+      display: block;
+      border-radius: 8px;
+    }
+    .caption {
+      font-size: 0.9rem;
+      color: var(--muted);
+      margin-top: 6px;
+      text-align: center;
+    }
+
+    /*styling*/
+    .blurb {
+      margin-top: 8px;
+      background: #fafafa;
+      border: 1px solid #eee;
+      border-radius: 10px;
+      padding: 14px 16px;
+      font-size: 0.98rem;
+    }
+    /*styling*/
+    pre {
+        background-color: #f4f4f4;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        padding: 10px;
+        overflow-x: auto;
+        font-size: 0.85rem;
+    }
+    code {
+        font-family: Consolas, Monaco, 'Andale Mono', 'Ubuntu Mono', monospace;
+    }
+
+  </style>
+</head>
+<body>
+  <div class="page">
+    <h1>Project 2/h1>
+    <p class="subtle">
+      In this project I learned image processing techniques, starting with 2D convolutions and fildering, before moving to frequency domains used for sharpening, cool hybradization and multi-resolution blending.
+    </p>
+
+    <h2 id="part1">Part 1</h2>
+    
+    <h3 id="part1-1">1.1:Convoltuions from Scratch</h3>
+    <div class="blurb">
+        <p>
+            Like we saw, a 2d convolution takes a sliding kernel, or filter, across an image adn gets sum of multiple element matched products. Thus we need to flip the kernel on its x and y axis before using it. 
+        </p>
+        <p>
+            I made a convolution from scratch only leveraging Numpy. I did this in 3 ways: first with 4 nested loops (iterating ove image and kernel coordinates), then with with 2 loops (leveraging vectorized Numpy operations). I used zero-padding to handle boundaries. I also then used sciPy at the end to verify all looked well.
+        </p>
+        
+        <strong>'For Four' Loop Code snippit:</strong>
+        <pre><code>
+for yCoordinate in range(imageHeight):
+    for xCoordinate in range(imageWidth):
+        currentSumOfProducts =0
+        # Loop over the kernel dimensions
+        for kernelY in range(kernelHeight):
+            for kernelX in range(kernelWidth):
+                #(Index calculations and padding) 
+                # Access kernel in reverse order (flipped)
+                kernelValue = kernelFilter[kernelHeight - 1 -kernelY,kernelWidth - 1 - kernelX]
+                #Multiply and accrue
+                currentSumOfProducts +=imagePixelValue *kernelValue
+        outputImage[yCoordinate, xCoordinate] =currentSumOfProducts
+        </code></pre>
+
+        <strong>2 Loop (Snippet):</strong>
+        <pre><code>
+# Flip the kernel for convolution
+flippedKernel = np.flip(kernelFilter)
+#do convolution using 2 loops
+for yCoordinate in range(imageHeight):
+    for xCoordinate in range(imageWidth):
+        #get region of interest (ROI) from padded image
+        imagePatch =paddedImage[yCoordinate:yCoordinate + kernelHeight, xCoordinate:xCoordinate + kernelWidth]
+        #Sum of element matched multiplications
+        outputImage[yCoordinate, xCoordinate] =np.sum(imagePatch * flippedKernel)
+        </code></pre>
+
+        <strong>Comparison:</strong>
+        <p>
+            All methods the methods gave indistinguishable results with zero-padding. Their runtimes did vary though. SciPy was the fastest, followed by the Two Loop (vectorized) implementation, with the Four Loop implementation being the slowest, which is expected.
+        </p>
+    </div>
+
+    <div class="hero">
+        <figure class="imgcard">
+            <img src="output_visualizations/Fig_1_Part_1_1_Box_Filter.png" alt="Application of 9x9 Box Filter" />
+            <figcaption class="caption">Application of a 9x9 Box Filter (Blurring).</figcaption>
+        </figure>
+        <figure class="imgcard">
+            <img src="output_visualizations/Fig_2_Part_1_1_Finite_Differences.png" alt="Application of Finite Difference Operators" />
+            <figcaption class="caption">Finite difference Operators D_x and D_y.</figcaption>
+        </figure>
+    </div>
+
+
+    <h3 id="part1-2">1.2:Finite difference Operator</h3>
+    <div class="blurb">
+        <p>
+            I then got the partial derivatives of an image using the finite difference operators D_x and D_y, using centered difference kernels like \(0.5 \times [-1, 0, 1]\)).
+        </p>
+        <p>
+            The gradient magntude is calculated as \(\|\nabla f\| = \sqrt{f_x^2 + f_y^2}\). This diretly represents edges, as these are just areas of the most rapid change'.
+        </p>
+        <p>
+            For an edge image,I binarised the gradient magnitude via threshold multiplication
+        </p>
+        <p>
+            <strong>Threshold:</strong> A threshold of T=0.06 was chosen. I tweaked this many times, so this was decided mainly through trail and error but it seems to balance capturing fainter, real edges while suppressing minor noise. The results without smoothing are super noisy.
+        </p>
+    </div>
+
+    <div class="hero">
+        <figure class="imgcard">
+            <img src="output_visualizations/Fig_3_Part_1_2_Derivatives.png" alt="Partial Derivatives X and Y" />
+            <figcaption class="caption">partial Derivatives in X and Y (abs values shown).</figcaption>
+        </figure>
+        <figure class="imgcard">
+            <img src="output_visualizations/Fig_4_Part_1_2_Edge_Detection_Noisy.png" alt="Gradient Magnitude and Binarized Edges" />
+            <figcaption class="caption">Gradient Magnitude and my spawned Binarised Edge Image (T=0.06).</figcaption>
+        </figure>
+    </div>
+
+    <h3 id="part1-3">1.3, derivative of a Gaussian (DoG) Filter</h3>
+    <div class="blurb">
+        <p>
+            The finite difference operator accelerates noise, so as we saw in lecture we need to smooth the image using a gaussian before applying derivative filter. I created the guassian filter using <code>cv2.getGaussianKernel</code> and taking the outer product of the 1D kernel with its trnspose.
+        </p>
+        <p>
+            Smoothing the image before taking derivatives significantly reduces noise in the gradient magnitude image, garnering in more clean and localized edge detection.
+        </p>
+        <p>
+            Also as we saw, from the associativity of convolution, \((I * G) * D = I * (G *D)\). As such one can combine the filters into a single Derivative of Gaussian (DoG) filter via convolving G with D.
+        </p>
+        <p>
+            I verified that blurring the image and then taking the derivative yields the same result as convolving the image directly with the DoG filter, they were again indistinguishable.
+        </p>
+    </div>
+
+    <div class="hero">
+        <figure class="imgcard">
+            <img src="output_visualizations/Fig_5_Part_1_3_Filter_Visualization.png" alt="Visualization of Gaussian and DoG Filters" />
+            <figcaption class="caption">Seeing the Gaussian kernal and the resulting DoG X/Y filters (Sigma=2.0).</figcaption>
+        </figure>
+    </div>
+    <div class="hero">
+        <figure class="imgcard">
+            <img src="output_visualizations/Fig_6_Part_1_3_DoG_Edge_Detection_Clean.png" alt="Results of DoG Edge Detection" />
+            <figcaption class="caption">DoG Edge Detection Results. The edges were more clean when compared to Part 1.2 (T=0.02).</figcaption>
+        </figure>
+    </div>
+
+    <h2 id="part2">Part 2</h2>
+
+    <h3 id="part2-1">Image sharpening</h3>
+    <div class="blurb">
+        <p>
+            I made "Unsharp Masking". This is a gaussian filter which essentially just acts like as a low pass filter. Via the subtraction of  the blurred (low-frew) version from the original image, the high frequencies-- or more intuitvely details in an image-- can be isolated. 
+        </p>
+        <p style="text-align: center;">
+            \[ \text{Details} = \text{Original} - \text{Gaussian Blur}(\text{Original}) \]
+        </p>
+        <p>
+            The sharpened image is created by adding an amplified amount (\(\alpha\)) of those details back to the original image.
+        </p>
+        <p style="text-align: center;">
+            \[ \text{Sharpened} = \text{Original} + \alpha \times (\text{Details}) \]
+        </p>
+    </div>
+
+    <div class="hero">
+        <figure class="imgcard">
+            <img src="output_visualizations/Fig_7_Part_2_1_Unsharp_Masking_Alpha_2_5.png" alt="Unsharp Masking Process" />
+            <figcaption class="caption">Unsharp Masking process with (Sigma=3.0, Alpha=2.5). High frequencies are shown with +0.5 bias.</figcaption>
+        </figure>
+    </div>
+    <div class="hero">
+        <figure class="imgcard">
+            <img src="output_visualizations/Fig_8_Part_2_1_Varying_Sharpening_Amount.png" alt="Varying Alpha Strength" />
+            <figcaption class="caption">Rhe effect of varying the sharpening strength (\(\alpha\)).</figcaption>
+        </figure>
+        <figure class="imgcard">
+            <img src="output_visualizations/Fig_9_Part_2_1_Sharpening_Another_Image.png" alt="Sharpening Another Image" />
+            <figcaption class="caption">Sharpening again</figcaption>
+        </figure>
+    </div>
+
+    <div class="blurb">
+        <strong>Evaluation:</strong>
+        <p>
+            Sharpened image, artificially blurred, and then sharpen it again. I think the effect is pretty noticable.
+        </p>
+        <p>
+            <strong>Observations:</strong> The sharpened image gets back some of the crispiness, but doesn't really perfectly match the original sharp image. This is beucase blurring is lossy and information lost during blurring can't be fully gotten back, so sharpening often introduces artifacts like the small halos around edges.
+        </p>
+    </div>
+    <div class="hero">
+        <figure class="imgcard">
+            <img src="output_visualizations/Fig_10_Part_2_1_Recovery_Evaluation.png" alt="Evaluation of Sharpening Recovery" />
+            <figcaption class="caption"> Orig, Artificially Blurred, and Recovered (with the halos and effects introducted).</figcaption>
+        </figure>
+    </div>
+
+
+    <h3 id="part2-2">2.2 Hybrid Image Optical Illusions</h3>
+    <div class="blurb">
+        <p>
+            Hybrid images are cool photos where if you squint or look far away you see one image, and then up close you see another. THis phenomenon areises since high frequencies dominate up close, but low frequencies are more noticeable from far away. So, a  "hybrid image" is created via blending the high-frequency component of one image with the low-frequency component of another..
+        </p>
+        <p>
+            <strong>Process:</strong>
+            1.Align input photos manually (for coolest results, and I wasn't able to automate this step).
+            2. Low-pass filter Image A (Gaussian blur).
+            3. High-pass filter Image B (Original -Gaussian blur).
+            4. Sum filtered images.
+        </p>
+        <p>
+             Cutoff frequencies (sig values) were also garnered via trail and error. Low sigmas of value 8  distant image for the coarse features. High sigmas (5) were used for the nearby image for final detials.
+        </p>
+    </div>
+
+    <div class="hero">
+        <figure class="imgcard">
+            <img src="output_visualizations/Fig_11_Part_2_2_Hybrid_Image_Process_and_Fourier_Analysis.png" alt="Hybrid Image Process and Fourier Analysis" />
+        </figure>
+    </div>
+    
+    <h4>Additional Hybrid Results</h4>
+    <div class="hero">
+        <figure class="imgcard">
+            <img src="output_visualizations/Fig_12_Part_2_2_Hybrid_Image_Example_2_Animal_Morph.png" alt="Hybrid Image Example 2" />
+        </figure>
+        <figure class="imgcard">
+            <img src="output_visualizations/Fig_13_Part_2_2_Hybrid_Image_Example_3_Person_Change.png" alt="Hybrid Image Example 3" />
+        </figure>
+    </div>
+
+    <h3 id="part2-3">2.3</h3>
+    <div class="blurb">
+        <p>
+            I made gaussian and Laplacian Stacks, which, unlike Pyramids, stacks dn't downsample the image and instead all levels retain the original dimensions.
+        </p>
+        <p>
+            <strong>Gaussian Stacl:</strong> Level \(G_0\) is the orig image. Follwing levels \(G_{i+1}\) are created via suessive a Gaussian filters to \(G_i\).
+        </p>
+        <p>
+            <strong>Laplacian Stack:</strong> Each level \(L_i\) notes the difference between successive Gaussian levels (\(L_i = G_i - G_{i+1}\)), representing a specific band of frequencies. The final level is the coarsest Gaussian residual.
+        </p>
+    </div>
+
+    <h4>Stack Visualization)</h4>
+    <div class="hero">
+        <figure class="imgcard">
+            <img src="output_visualizations/Fig_14_Image_A_Apple_Substitute_Gaussian_Stack.png" alt="Gaussian Stack A" />
+        </figure>
+    </div>
+     <div class="hero">
+        <figure class="imgcard">
+            <img src="output_visualizations/Fig_15_Image_A_Apple_Substitute_Laplacian_Stack.png" alt="Laplacian Stack A" />
+        </figure>
+    </div>
+    
+    <h3 id="part2-4">2.4: Multi-res blending</h3>
+    <div class="blurb">
+        <p>
+            Multiresolution blending  is supposed to 'seamlessly' joins two images by computing the seam separately at each frequency band with laplacian stacks.
+        </p>
+        <p>
+            <strong>Process:</strong>
+            Create Laplacian Stacks for inputs A & B (\(LA, LB\)), and then a Gausian Stack for the mask (\(GM\)). This stack is esssentiallysmooths the transition boundary. Then, stacks are blended at each level \(i\):
+            <p style="text-align: center;">
+            \[ LS_i = GM_i \times LA_i + (1 - GM_i) \times LB_i \]
+            </p>
+             Final image is gotten via collapsing, or summing rather, the blended Laplacian stack (\(LS\)). To me a big sigma (15) for the mask stack to ensure a wide, smooth transition looked the best, I think this maybe could've been lower if the dog photos were better aligned, but I couldn't some good ones where their heads were the same heights on two photos. 
+        </p>
+    </div>
+
+    <h4>Vertical Seam ("Oraple" Style)</h4>
+     <div class="hero">
+        <figure class="imgcard">
+            <img src="output_visualizations/Fig_18_Part_2_4_Vertical_Blending_Smoother.png" alt="Vertical Blending Result" />
+        </figure>
+    </div>
+
+    <h4>Blending Process Visualization</h4>
+    <div class="hero">
+        <figure class="imgcard">
+            <img src="output_visualizations/Fig_19_Blended_Result_Mask_G_and_Blended_Laplacian_L_Gaussian_Stack.png" alt="Gaussian Stack of Mask" />
+        </figure>
+    </div>
+     <div class="hero">
+        <figure class="imgcard">
+            <img src="output_visualizations/Fig_20_Blended_Result_Mask_G_and_Blended_Laplacian_L_Laplacian_Stack.png" alt="Blended Laplacian Stack" />
+        </figure>
+    </div>
+
+    <h4>Irregular Mask Blending</h4>
+    <div class="hero">
+        <figure class="imgcard">
+            <img src="output_visualizations/Fig_21_Part_2_4_Irregular_Mask_Blending.png" alt="Irregular Mask Blending Result" />
+        </figure>
+    </div>
+
+  </div>
+</body>
+</html>
