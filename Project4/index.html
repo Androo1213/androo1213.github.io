@@ -34,10 +34,11 @@
     .hero-center {
         justify-content: center;
     }
+    /* photo grid box */
     .photo-box {
       display: grid;
-      grid-template-columns: repeat(3, 1fr); /* 3 across */
-      gap: 10px;
+      grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+      gap: 8px;
       padding: 12px;
       background: #f8f8f8;
       border: 1px solid #e5e5e5;
@@ -45,23 +46,37 @@
       box-shadow: 0 1px 6px rgba(0,0,0,0.06);
       margin: 16px 0;
     }
-    .imgcard img {
-      width: 100%;
-      height: auto;
-      display: block;
-      border-radius: 8px;
-    }
+    
+    /* individual photo cards */
+    .imgcard {
+      background: var(--card);
+      border: 1px solid #e5e5e5;
+      border-radius: 10px;
+      padding: 6px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+    }
+    
+    .imgcard img {
+      width: 100%;
+      aspect-ratio: 1 / 1;
+      object-fit: cover;
+      display: block;
+      border-radius: 6px;
+    }
+    
+    @media (max-width: 700px) {
+      .photo-box {
+        grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+      }
+    }
     .caption {
       font-size: 0.9rem;
       color: var(--muted);
       margin-top: 6px;
       text-align: center;
     }
-    @media (max-width: 700px) {
-    .photo-box { grid-template-columns: repeat(2, 1fr); }
-    }
+    
 
-    /* Styling */
     .blurb {
       margin-top: 8px;
       background: #fafafa;
