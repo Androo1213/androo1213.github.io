@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>Project 3A: Image Warping and Mosaicing</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+  <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+  <style>
+    :root {
+      --fg: #1b1b1b;
+      --muted: #666;
+      --card: #f7f7f7;
+    }
+    html, body { margin: 0; padding: 0; }
+    body { font-family: Arial, Helvetica, sans-serif; color: var(--fg); line-height: 1.55; }
+    /* Responsive design */
+    @media (min-width: 1280px) {
+        .page { max-width: 1400px; } 
+    }
+    .page { max-width: 1100px; margin: 32px auto; padding: 0 20px; }
+    h1 { margin: 0 0 8px; }
+    h2 { margin-top: 48px; border-bottom: 1px solid #eee; padding-bottom: 8px;}
+    h3 { margin-top: 32px; }
+    .subtle { color: var(--muted); margin: 0 0 24px; }
+
+    /* Captions utilities */
+    .hero {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin: 18px 0 10px;
+      flex-wrap: wrap; /* Fixes layout on mobile */
+    }
+    .hero-center {
+        justify-content: center;
+    }
+    .imgcard {
+      background: var(--card);
+      border: 1px solid #e5e5e5;
+      border-radius: 12px;
+      padding: 8px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+      flex: 1 1 auto;
+      max-width: 100%;
+    }
+    .imgcard img {
+      width: 100%;
+      height: auto;
+      display: block;
+      border-radius: 8px;
+    }
+    .caption {
+      font-size: 0.9rem;
+      color: var(--muted);
+      margin-top: 6px;
+      text-align: center;
+    }
+
+    /* Styling */
+    .blurb {
+      margin-top: 8px;
+      background: #fafafa;
+      border: 1px solid #eee;
+      border-radius: 10px;
+      padding: 14px 16px;
+      font-size: 0.98rem;
+    }
+    .math-summary {
+        background: #eaf5ff;
+        border-left: 4px solid #0066cc;
+        padding: 10px 15px;
+        margin: 15px 0;
+        border-radius: 5px;
+    }
+    .matrix {
+        text-align: center;
+        margin: 15px 0;
+    }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <h1>Image Warping and Mosaicing</h1>
+
+    <h2>Proj Architecture</h2>
+    <div class="blurb">
+        <p>
+            To complete this project I a modular, OOP paradigm within  Python. The logic is divided into different classes:
+        </p>
+        <ul>
+            <li><strong>HomographyCalculator:</strong> This class implments Direct Linear Transform (DLT) and Singular value Decomposition (SVD) to get the homography matrix H.</li>
+            <li><strong>ImageWarper:</strong> this class handles the inverse warping and implements nearest neighbor and Bilinear interpolation</li>
+            <li><strong>MosaicBlender:</strong> managers the alignment of warped images and implements weighted blending using distance transform AKA Feathering.</li>
+            <li><strong>PointCollector:</strong> Just used clickable interface leveraging <code>matplotlib.ginput</code> to  select correspondences, with caching too</li>
+        </ul>
+        <p>
+            Everything is coded up leverating NumPy since OpenCV functions like <code>cv2.findHomography</code>, <code>cv2.warpPerspective</code>, etc weren't allowed.
+        </p>
+    </div>
+
+    <h2 id="A1">Pictures/h2>
+    <div class="blurb">
+        <p>
+           To get transformation between images being projective (a perspective transform), my photos were taken by fixing the center of project and rotating the camera. So essentially, I tried to twist my phone on the axis of where the camera is (since iphone cameras are offset) and tried not to wiggle my phone on its x axis. To make the mosaicing possible, between shots there was some photo overlap.
+        </p>
+        <p><em>(Note: If you wish to display your input images here, place them in the media/ folder and uncomment the sections below).</em></p>
+    </div>
+
+        <h2 id="A2">Recovering Homographies</h2>
+    <div class="blurb">
+        <p>
+           For image alignmen the projective transformation between photos needed to be recovered. This transformation is a Homography, which is a a 3x3 matrix \(H\) w/ 8 degrees of freedom. The last element is a scaling factor normalised to 1. The relationship betwee point \(p\) in one image and its corresponding point \(p'\) in another is given by: \(p' = Hp\).
+        </p>
+
+        <h3>Using DLT & SVD</h3>
+        <div class="math-summary">
+            <p>
+                I used DLT, so given a set of corresponding points (same places in the overlap of two images) \((x, y)\) and \((x', y')\),up a system of linear equations \(Ah = 0\), where \(h\) is a vector containing the 9 elements of \(H\) can be made. Thus, frome each set of points from the same place (a correspondence) I got two equations, forming two rows in the matrix A:
+            </p>
+            <div class="matrix">
+                $$
+                \begin{bmatrix}
+                x & y & 1 & 0 & 0 & 0 & -x'x & -x'y & -x' \\
+                0 & 0 & 0 & x & y & 1 & -y'x & -y'y & -y'
+                \end{bmatrix}
+                h = 0
+                $$
+            </div>
+            <p>
+                A minimum of 4 points (8 equations) are required. For improvemtns against noise, I use more point, (the returns were extremely diminishing after 6 points), to get a overdetermined system. The leasat squared solution which minimizes \(||Ah||\) with SVD. The solution \(h\) is the eigenvector which represents the smallest singular value of \(A\).
+            </p>
+        </div>
+
+        <h3>Getting Correspondences</h3>
+        <p>
+            To get the corresponded I used <code>matplotlib.ginput</code>, to put the adjacent images side by side and then I would click points that were within the overlap of both images and saved these points. 
+        </p>
+    </div>
+
+    <h3> Correspondences from matplotlib.ginput</h3>
+    <div class="hero">
+        <figure class="imgcard">
+            <img src="media/DotsTrees.png"/>
+        </figure>
+        <figure class="imgcard">
+            <img src="Dots.png"/>
+        </figure>
+    </div>
+     <div class="hero">
+        <figure class="imgcard">
+            <img src="A2_Correspondences_SecondSet_4_5.png"/>
+        </figure>
+    </div>
+
+
+    <h2 id="A3">Warping</h2>
+    <div class="blurb">
+        <p>
+            With \(H\) is recovered, the images are warped into alignment. I used <strong>Inverse Warping</strong> to prevent holes new image. For every pixel in the destination image, I get the corresponding location in the src image via the inverse homography: \(p = H^{-1}p'\).
+        </p>
+        <h3>Interpolation methods</h3>
+        <p>
+            Since the calculated source coordinates \(p\) become fractional often, I  interpolated the pixel value. Two methods for these were coded: 
+        </p>
+        <ul>
+            <li><strong>Nearest Neighbor:</strong> rounds the coords to the nearest integer pixel value. Pros of this method are speed, but it introduced aliasing often..</li>
+            <li><strong>Bilinear Interpolation:</strong> Gets a weighted average of the four neighboring pixels. Slower but a lot smoother results.</li>
+        </ul>
+
+        <h3>Image Rectification</h3>
+        <p>
+            To see the homography calculation and warping implementation, I did image rectification. I take a photo and select a known rectangular (in real life) in the scene that scence which now appears skewed due to perspective and warp it to be front parallel.
+        </p>
+    </div>
+
+    <div class="hero">
+        <figure class="imgcard">
+            <img src="media/RectificationFirstSet.png" alt="Rectification FirstSet"/>
+        </figure>
+    </div>
+
+    <h3>Image Insertion</h3>
+    <div class="blurb">
+        <p>To play with those same principles of homography and warping I wanted to project one image onto a planar surface in another image. I calculated the homography mapping the four corners of the source image to four selected points on the target surface, warp the source, and overlay it. I did it for the starry night on the campinille but with more time I want to more creatively experiement, and leverage blending from the last project to make it look nicer.</p>
+    </div>
+    <div class="hero">
+        <figure class="imgcard">
+            <img src="media/StarryNightOnBuildingDemo.png" alt="Image Insertion Example"/>
+        </figure>
+    </div>
+
+
+    <h2 id="A4">Blending seperate Images into a Mosaic</h2>
+    <div class="blurb">
+        <p>
+            Now I warp all images into a common reference frame, and then blend them to create a (mostly) seamless mosaic.
+        </p>
+        <h3>Multi-Image Pipeline</h3>
+        <p>
+            For mant of images, I first get the pairwise homographies. Then a central image is chosen as the reference frame. Homographies get chained via matrix multiplication and inverstion in order to transform all other images into this reference frame (for example: \(H_{3\to1} = H_{2\to1} \cdot H_{3\to2}\)).
+        </p>
+        <h3>Blending Feathering</h3>
+        <p>
+            Overlaying images makes for seamsb bewteen the imaeges. To mitigate this problem, I used use feathering.  I did this via the Distance Transform.
+        </p>
+        <p>
+            The distance Ttansform get the distance from every pixel to the nearest edge of the image, and then through normalizing this map, weights are created tthat are high near the center and decrease smoothly to 0 at the edges. Then, the final mosaic gets calculated as \(Mosaic = \frac{\sum (W_i \cdot I_i)}{\sum W_i}\).
+        </p>
+    </div>
+
+    <h3>Final Mosaics</h3>
+
+    <h4>Mosaic 1: FirstSet</h4>
+    <div class="hero hero-center">
+        <figure class="imgcard" style="max-width: 95%;">
+            <img src="media/mosaicFirsstSet.png" alt="Mosaic FirstSet"/>
+        </figure>
+    </div>
+
+    <h4>Mosaic 2: SecondSet</h4>
+    <div class="hero hero-center">
+        <figure class="imgcard" style="max-width: 95%;">
+            <img src="media/secondSetMosiac.png"/>
+            <figcaption class="caption">Interestingly, the leaves did not turn out well, due to the wind when taking the photos, as seen by the building behind being aligned well. Also a seam from auto iPhone lighting adjusments can be seen.</figcaption>
+        </figure>
+    </div>
+
+  </div>
+</body>
+</html>
