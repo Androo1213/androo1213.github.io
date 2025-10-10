@@ -1,42 +1,41 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <title>Project 3A: Image Warping and Mosaicing</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta charset="utf-8" />
+  <title>Project 3A: Image Warping and Mosaicing</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
   <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
-  <style>
-    :root {
-      --fg: #1b1b1b;
-      --muted: #666;
-      --card: #f7f7f7;
-    }
-    html, body { margin: 0; padding: 0; }
-    body { font-family: Arial, Helvetica, sans-serif; color: var(--fg); line-height: 1.55; }
-    /* Responsive design */
-    @media (min-width: 1280px) {
-        .page { max-width: 1400px; } 
+  <style>
+    :root {
+      --fg: #1b1b1b;
+      --muted: #666;
+      --card: #f7f7f7;
     }
-    .page { max-width: 1100px; margin: 32px auto; padding: 0 20px; }
-    h1 { margin: 0 0 8px; }
-    h2 { margin-top: 48px; border-bottom: 1px solid #eee; padding-bottom: 8px;}
+    html, body { margin: 0; padding: 0; }
+    body { font-family: Arial, Helvetica, sans-serif; color: var(--fg); line-height: 1.55; }
+    @media (min-width: 1280px) {
+        .page { max-width: 1400px; } 
+    }
+    .page { max-width: 1100px; margin: 32px auto; padding: 0 20px; }
+    h1 { margin: 0 0 8px; }
+    h2 { margin-top: 48px; border-bottom: 1px solid #eee; padding-bottom: 8px;}
     h3 { margin-top: 32px; }
-    .subtle { color: var(--muted); margin: 0 0 24px; }
+    .subtle { color: var(--muted); margin: 0 0 24px; }
 
-    .hero {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      margin: 18px 0 10px;
-      flex-wrap: wrap; 
-    }
+    .hero {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin: 18px 0 10px;
+      flex-wrap: wrap; 
+    }
     .hero-center {
         justify-content: center;
     }
     .photo-box {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); /* was 150px */
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
       gap: 10px;
       padding: 12px;
       background: #f8f8f8;
@@ -44,13 +43,6 @@
       border-radius: 12px;
       box-shadow: 0 1px 6px rgba(0,0,0,0.06);
       margin: 16px 0;
-    }
-    .imgcard img {
-      width: 100%;
-      aspect-ratio: 4 / 3; 
-      object-fit: cover;
-      display: block;
-      border-radius: 6px;
     }
     
     .imgcard {
@@ -61,30 +53,44 @@
       box-shadow: 0 1px 3px rgba(0,0,0,0.05);
     }
     
-    
+    .imgcard img {
+      width: 100%;
+      height: auto;
+      display: block;
+      border-radius: 6px;
+    }
+
+    .photo-box .imgcard img {
+      aspect-ratio: 4 / 3;
+      object-fit: cover;
+    }
     
     @media (max-width: 900px) {
-      .photo-box { grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); }
+      .photo-box {
+        grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+      }
     }
     @media (max-width: 600px) {
-      .photo-box { grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); }
+      .photo-box {
+        grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+      }
     }
-    .caption {
-      font-size: 0.9rem;
-      color: var(--muted);
-      margin-top: 6px;
-      text-align: center;
-    }
+    .caption {
+      font-size: 0.9rem;
+      color: var(--muted);
+      margin-top: 6px;
+      text-align: center;
+    }
     
 
-    .blurb {
-      margin-top: 8px;
-      background: #fafafa;
-      border: 1px solid #eee;
-      border-radius: 10px;
-      padding: 14px 16px;
-      font-size: 0.98rem;
-    }
+    .blurb {
+      margin-top: 8px;
+      background: #fafafa;
+      border: 1px solid #eee;
+      border-radius: 10px;
+      padding: 14px 16px;
+      font-size: 0.98rem;
+    }
     .math-summary {
         background: #eaf5ff;
         border-left: 4px solid #0066cc;
@@ -96,11 +102,11 @@
         text-align: center;
         margin: 15px 0;
     }
-  </style>
+  </style>
 </head>
 <body>
-  <div class="page">
-    <h1>Image Warping and Mosaicing</h1>
+  <div class="page">
+    <h1>Image Warping and Mosaicing</h1>
 
     <h2>Proj Architecture</h2>
     <div class="blurb">
@@ -142,7 +148,7 @@
       <figure class="imgcard"><img src="media/imageSecond6.png" alt=""/></figure>
     </div>
 
-        <h2 id="A2">Recovering Homographies</h2>
+        <h2 id="A2">Recovering Homographies</h2>
     <div class="blurb">
         <p>
            For image alignmen the projective transformation between photos needed to be recovered. This transformation is a Homography, which is a a 3x3 matrix \(H\) w/ 8 degrees of freedom. The last element is a scaling factor normalised to 1. The relationship betwee point \(p\) in one image and its corresponding point \(p'\) in another is given by: \(p' = Hp\).
@@ -189,7 +195,7 @@
     </div>
 
 
-    <h2 id="A3">Warping</h2>
+    <h2 id="A3">Warping</h2>
     <div class="blurb">
         <p>
             With \(H\) is recovered, the images are warped into alignment. I used <strong>Inverse Warping</strong> to prevent holes new image. For every pixel in the destination image, I get the corresponding location in the src image via the inverse homography: \(p = H^{-1}p'\).
@@ -226,7 +232,7 @@
     </div>
 
 
-    <h2 id="A4">Blending seperate Images into a Mosaic</h2>
+    <h2 id="A4">Blending seperate Images into a Mosaic</h2>
     <div class="blurb">
         <p>
             Now I warp all images into a common reference frame, and then blend them to create a (mostly) seamless mosaic.
@@ -261,6 +267,6 @@
         </figure>
     </div>
 
-  </div>
+  </div>
 </body>
 </html>
