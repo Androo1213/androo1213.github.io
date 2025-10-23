@@ -253,7 +253,7 @@ data for this section -->
     </div>
     <div class="hero">
       <figure class="imgcard">
-        <img src="media/RawHarris.png" alt="Raw Harris Corners"/>
+        <img src="media/rawHarris.png" alt="Raw Harris Corners"/>
       </figure>
       <figure class="imgcard">
         <img src="media/anms.png" alt="Corners after ANMS"/>
@@ -304,7 +304,13 @@ data for this section -->
         <li><strong>Score:</strong> Project all points from img1 into img2 with the \(H\). Then count up the number of inliers. Inliers are  points where the projected location is within a pixel threshold (5 pixels for example) of the matched location in image 2.</li>
         <li><strong>Repeat:</strong> This happens for many iterations. The \(H\) that produces the largest set of inliers is naturally the deeted best model.</li>
         <li><strong>Refinement:</strong> A new, more accurate homography is computed using all the inliers from the best model.</li>
+        <li><strong>Below is what we end up with:</li>
       </ol>
+    </div>
+    <div class="hero">
+      <figure class="imgcard">
+        <img src="media/RanSacInlier.png" alt="RANSAC"/>
+      </figure>
     </div>
 
     <h3>Final Mosaics: Manual vs. Automatic</h3>
