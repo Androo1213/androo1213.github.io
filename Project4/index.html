@@ -207,7 +207,6 @@
         <p>
             With \(H\) is recovered, the images are warped into alignment. I used <strong>Inverse Warping</strong> to prevent holes new image. For every pixel in the destination image, I get the corresponding location in the src image via the inverse homography: \(p = H^{-1}p'\).
         </p>
-      .blurb {
         <p>To play with those same principles of homography and warping I wanted to project one image onto a planar surface in another image. I calculated the homography mapping the four corners of the source image to four selected points on the target surface, warp the source, and overlay it. I did it for the starry night on the campinille but with more time I want to more creatively experiement, and leverage blending from the last project to make it look nicer.</p>
     </div>
     <div class="hero">
@@ -225,7 +224,8 @@
         <h3>Multi-Image Pipeline</h3>
         <p>
             For mant of images, I first get the pairwise homographies. Then a central image is chosen as the reference frame. Homographies get chained via matrix multiplication and inverstion in order to transform all other images into this reference frame (for example: \(H_{3\to1} = H_{2\to1} \cdot H_{3\to2}\)).
-data for this section -->
+        </p>
+    </div>
     <h2 id="B">Part B: Auto Feature Matching and Mosaicing</h2>
     <div class="blurb">
       <p>
@@ -287,6 +287,7 @@ data for this section -->
     <div class="blurb">
       <p>
         I thought it was interesting looking at tenative matches when I had two images that didn't have any overlap. I found this interesting becuase, there still were matches found by the algorithm. I believe this happened because the feature descriptors are not perfectly unique. Repetitive like paint and metal edges and the hallway compared to metal edgess simply produce descriptors that are mathematically very similar just by coincidenc. Although, there were far less matches in this example, which empahsies the point on having robust filtering step.
+        </p>
     </div>
 
 
@@ -304,7 +305,7 @@ data for this section -->
         <li><strong>Score:</strong> Project all points from img1 into img2 with the \(H\). Then count up the number of inliers. Inliers are  points where the projected location is within a pixel threshold (5 pixels for example) of the matched location in image 2.</li>
         <li><strong>Repeat:</strong> This happens for many iterations. The \(H\) that produces the largest set of inliers is naturally the deeted best model.</li>
         <li><strong>Refinement:</strong> A new, more accurate homography is computed using all the inliers from the best model.</li>
-        <li><strong>Below is what we end up with:</li>
+        <li><strong>Below is what we end up with:</strong></li>
       </ol>
     </div>
     <div class="hero">
@@ -317,6 +318,7 @@ data for this section -->
     <div class="blurb">
       <p>
         Then with the homography from RANSAC, the images are warped and blended using the same <code>MosaicBlender</code> from Part A. It can be seen that even though I was so careful in selecting matching points, and did this process many times to try and get the best alignments, that the automatic approach produces much better mosaics.
+        </p>
     </div>
 
     <h4>Comparison 1</h4>
